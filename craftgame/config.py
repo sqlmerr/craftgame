@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class PostgresConfig(BaseModel):
     password: str = "password"
     user: str = "postgres"
@@ -15,9 +16,8 @@ class PostgresConfig(BaseModel):
 class Settings(BaseSettings):
     ai_token: str
     bot_token: str
+    jwt_secret: str
+
     postgres: PostgresConfig = PostgresConfig()
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
