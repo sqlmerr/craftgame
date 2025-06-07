@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from ..dto import CreateUserDTO, UserDTO
+from ..dto import CreateItemDTO, ItemDTO
 
 
-class UserWriter(Protocol):
-    async def create_user(self, data: CreateUserDTO) -> UserDTO:
+class ItemWriter(Protocol):
+    async def create_item(self, data: CreateItemDTO) -> ItemDTO:
         raise NotImplementedError

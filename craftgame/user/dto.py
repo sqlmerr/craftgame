@@ -12,6 +12,7 @@ class UserDTO:
 class CreateUserDTO:
     tg_id: int
 
+
 @dataclass(frozen=True)
 class UpdateUserDTO:
     tg_id: int | None = None

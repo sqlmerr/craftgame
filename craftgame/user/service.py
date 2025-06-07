@@ -12,7 +12,6 @@ from craftgame.user.interfaces.repo import UserRepo
 class UserService(UserReader, UserWriter, UserDeleter, UserUpdater):
     repository: UserRepo
 
-
     async def get_user_by_id(self, user_id: UUID) -> UserDTO | None:
         user = await self.repository.find_one_user_filtered({"id": user_id})
         if user:

@@ -1,5 +1,6 @@
 from typing import AsyncGenerator
 
+import sqlalchemy.exc
 from dishka import Provider, provide, AnyOf, Scope, AsyncContainer, make_async_container
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
@@ -18,7 +19,12 @@ class DatabaseProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def session(self) -> AsyncGenerator[AsyncSession]:
         async with self.session_maker() as session:
-            yield session
+            try:
+                yield session
+            except sqlalchemy.exc.SQLAlchemyError:
+                await session.rollback()
+            finally:
+                await session.commit()
 
 
 class RepositoryProvider(Provider):
@@ -29,7 +35,9 @@ class RepositoryProvider(Provider):
 
 class ServiceProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    def get_user_service(self, repo: UserRepo) -> AnyOf[UserService, UserReader, UserWriter, UserUpdater, UserDeleter]:
+    def get_user_service(
+        self, repo: UserRepo
+    ) -> AnyOf[UserService, UserReader, UserWriter, UserUpdater, UserDeleter]:
         return UserService(repo)
 
 
@@ -43,13 +51,14 @@ class ConfigProvider(Provider):
         return self.settings
 
 
-async def init_di(config: Settings, session_maker: async_sessionmaker[AsyncSession]) -> AsyncContainer:
+async def init_di(
+    config: Settings, session_maker: async_sessionmaker[AsyncSession]
+) -> AsyncContainer:
     container = make_async_container(
         DatabaseProvider(session_maker),
         RepositoryProvider(),
         ServiceProvider(),
-        ConfigProvider(config)
+        ConfigProvider(config),
     )
 
     return container
-

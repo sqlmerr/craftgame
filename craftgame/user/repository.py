@@ -15,13 +15,13 @@ class UserRepository(UserRepo):
 
     async def create_user(self, data: dict[str, Any]) -> UUID:
         stmt = insert(User).values(data).returning(User.id)
-        result = await self.session.scalar(stmt)
-        return result
+        result = await self.session.scalars(stmt)
+        return result.one()
 
     async def find_one_user_filtered(self, filters: dict[str, Any]) -> User | None:
         stmt = select(User).where(**filters)
-        result = await self.session.scalar(stmt)
-        return result
+        result = await self.session.scalars(stmt)
+        return result.one_or_none()
 
     async def update_user(self, user_id: UUID, data: dict[str, Any]):
         stmt = update(User).values(data).where(User.id == user_id)
