@@ -1,0 +1,17 @@
+from uuid import UUID
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, relationship, mapped_column
+
+from craftgame.common.base import Base
+from craftgame.item.model import Item
+from craftgame.user.model import User
+
+
+class Inventory(Base):
+    __tablename__ = "inventory"
+    user: Mapped[User] = relationship()
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+
+    item: Mapped[Item] = relationship()
+    item_id: Mapped[UUID] = mapped_column(ForeignKey("items.id"))

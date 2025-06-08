@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import insert, select, update, delete
+from sqlalchemy import insert, select, update, delete, ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from craftgame.user.interfaces.repo import UserRepo
@@ -18,8 +18,8 @@ class UserRepository(UserRepo):
         result = await self.session.scalars(stmt)
         return result.one()
 
-    async def find_one_user_filtered(self, filters: dict[str, Any]) -> User | None:
-        stmt = select(User).where(**filters)
+    async def find_one_user_filtered(self, filters: ColumnElement[bool]) -> User | None:
+        stmt = select(User).where(filters)
         result = await self.session.scalars(stmt)
         return result.one_or_none()
 

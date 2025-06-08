@@ -1,6 +1,6 @@
 [project]
 name = "craftgame"
-version = "0.1.2"
+version = "0.2.0"
 description = "Add your description here"
 requires-python = ">=3.13"
 dependencies = [
@@ -13,6 +13,7 @@ dependencies = [
     "pydantic-settings>=2.9.1",
     "pyjwt>=2.10.1",
     "sqlalchemy>=2.0.41",
+    "uvicorn>=0.34.3",
 ]
 
 [dependency-groups]

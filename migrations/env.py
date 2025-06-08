@@ -11,6 +11,7 @@ from craftgame.common.base import Base
 from craftgame.user.model import User  # noqa, for correct autogenerate
 from craftgame.craft.model import Craft  # noqa, for correct autogenerate
 from craftgame.item.model import Item  # noqa, for correct autogenerate
+from craftgame.inventory.model import Inventory  # noqa, for correct autogenerate
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

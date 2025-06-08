@@ -11,7 +11,9 @@ class CraftRepo(Protocol):
     async def find_one_craft_filtered(self, filters: dict[str, Any]) -> Craft | None:
         raise NotImplementedError
 
-    async def find_one_craft_by_ingredients(self, ingredient1_id: UUID, ingredient2_id: UUID) -> Craft | None:
+    async def find_one_craft_by_ingredients(
+        self, ingredient1_id: UUID, ingredient2_id: UUID
+    ) -> Craft | None:
         raise NotImplementedError
 
     async def find_all_crafts(self, filters: dict[str, Any]) -> list[Craft]:

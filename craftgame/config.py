@@ -16,7 +16,7 @@ class PostgresConfig(BaseModel):
 class Settings(BaseSettings):
     ai_token: str
     bot_token: str
-    jwt_secret: str
+    webhook_url: str
 
     postgres: PostgresConfig = PostgresConfig()
 

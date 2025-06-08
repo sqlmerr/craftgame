@@ -10,6 +10,7 @@ class ItemDTO:
     opened_by_id: UUID | None
     opened_at: datetime.datetime
 
+
 class CreateItemDTO:
     name: str
     opened_by_id: UUID | None

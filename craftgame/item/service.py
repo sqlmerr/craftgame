@@ -20,7 +20,7 @@ class ItemService(ItemReader, ItemWriter, ItemDeleter):
             id=item.id,
             name=item.name,
             opened_by_id=item.opened_by_id,
-            opened_at=item.opened_at
+            opened_at=item.opened_at,
         )
 
     async def get_all_items_opened_by_user(self, user_id: UUID) -> list[ItemDTO]:
@@ -32,7 +32,7 @@ class ItemService(ItemReader, ItemWriter, ItemDeleter):
                     id=i.id,
                     name=i.name,
                     opened_by_id=i.opened_by_id,
-                    opened_at=i.opened_at
+                    opened_at=i.opened_at,
                 )
             )
         return dtos
