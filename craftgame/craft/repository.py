@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import insert, update, delete, select, and_
+from sqlalchemy import insert, delete, select, and_, ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from craftgame.craft.interfaces.repo import CraftRepo
@@ -18,8 +18,10 @@ class CraftRepository(CraftRepo):
         result = await self.session.scalars(stmt)
         return result.one()
 
-    async def find_one_craft_filtered(self, filters: dict[str, Any]) -> Craft | None:
-        stmt = select(Craft).where(**filters)
+    async def find_one_craft_filtered(
+        self, filters: ColumnElement[bool]
+    ) -> Craft | None:
+        stmt = select(Craft).where(filters)
         result = await self.session.scalars(stmt)
         return result.one_or_none()
 
@@ -39,8 +41,8 @@ class CraftRepository(CraftRepo):
         result = await self.session.scalars(stmt)
         return result.one_or_none()
 
-    async def find_all_crafts(self, filters: dict[str, Any]) -> list[Craft]:
-        stmt = select(Craft).where(**filters)
+    async def find_all_crafts(self, filters: ColumnElement[bool]) -> list[Craft]:
+        stmt = select(Craft).where(filters)
         result = await self.session.scalars(stmt)
         return list(result.all())
 

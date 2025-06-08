@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import NoReturn
 from uuid import UUID
 
 from craftgame.common.exceptions import ServerError
+from craftgame.inventory.interfaces.repo import InventoryRepo
+from craftgame.item.interfaces.repo import ItemRepo
+from craftgame.item.model import Item
 from craftgame.user.dto import UserDTO, CreateUserDTO, UpdateUserDTO
 from craftgame.user.exceptions import UserWithThisTelegramIdAlreadyExists
 from craftgame.user.interfaces import UserReader, UserWriter, UserDeleter, UserUpdater
@@ -13,6 +16,8 @@ from craftgame.user.model import User
 @dataclass(frozen=True)
 class UserService(UserReader, UserWriter, UserDeleter, UserUpdater):
     repository: UserRepo
+    inventory_repo: InventoryRepo
+    item_repo: ItemRepo
 
     async def get_user_by_id(self, user_id: UUID) -> UserDTO | None:
         user = await self.repository.find_one_user_filtered(User.id == user_id)
@@ -32,7 +37,7 @@ class UserService(UserReader, UserWriter, UserDeleter, UserUpdater):
             )
         return None
 
-    async def create_user(self, data: CreateUserDTO) -> UserDTO:
+    async def create_user(self, data: CreateUserDTO) -> UserDTO | NoReturn:
         usr = await self.get_user_by_tg_id(data.tg_id)
         if usr is not None:
             raise UserWithThisTelegramIdAlreadyExists
@@ -41,6 +46,13 @@ class UserService(UserReader, UserWriter, UserDeleter, UserUpdater):
         user = await self.get_user_by_id(user_id)
         if not user:
             raise ServerError
+
+        for i in ["water", "fire", "wind", "earth"]:
+            item = await self.item_repo.find_one_item_filtered(Item.name == i)
+            await self.inventory_repo.create_inventory(
+                dict(user_id=user_id, item_id=item.id)
+            )
+
         return user
 
     async def delete_user(self, user_id: UUID) -> None:

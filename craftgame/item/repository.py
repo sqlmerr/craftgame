@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import insert, update, delete, select
+from sqlalchemy import insert, update, delete, select, ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from craftgame.item.interfaces.repo import ItemRepo
@@ -18,13 +18,13 @@ class ItemRepository(ItemRepo):
         result = await self.session.scalars(stmt)
         return result.one()
 
-    async def find_one_item_filtered(self, filters: dict[str, Any]) -> Item | None:
-        stmt = select(Item).where(**filters)
+    async def find_one_item_filtered(self, filters: ColumnElement[bool]) -> Item | None:
+        stmt = select(Item).where(filters)
         result = await self.session.scalars(stmt)
         return result.one_or_none()
 
-    async def find_all_items(self, filters: dict[str, Any]) -> list[Item]:
-        stmt = select(Item).where(**filters)
+    async def find_all_items(self, filters: ColumnElement[bool]) -> list[Item]:
+        stmt = select(Item).where(filters)
         result = await self.session.scalars(stmt)
         return list(result.all())
 

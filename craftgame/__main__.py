@@ -7,6 +7,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 
 from craftgame.config import Settings
 from craftgame.di import init_di
+from craftgame.item.dto import CreateItemDTO
+from craftgame.item.model import Item
+from craftgame.item.service import ItemService
 from craftgame.presentation.api import create_app
 from dishka.integrations.fastapi import setup_dishka
 from dishka.integrations.aiogram import setup_dishka as setup_aiogram_dishka
@@ -20,6 +23,19 @@ def init_db(settings: Settings) -> async_sessionmaker[AsyncSession]:
     return session_maker
 
 
+async def create_initial_data(item_service: ItemService):
+    for name, emoji in [
+        ("water", "💧"),
+        ("fire", "🔥"),
+        ("wind", "💨"),
+        ("earth", "🌎"),
+    ]:
+        item = await item_service.repo.find_one_item_filtered(Item.name == name)
+        if item:
+            continue
+        await item_service.create_item(CreateItemDTO(name, emoji, opened_by_id=None))
+
+
 def main() -> FastAPI:
     settings = Settings()
     session_maker = init_db(settings)
@@ -31,13 +47,17 @@ def main() -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        async with container() as c:
+            await create_initial_data(await c.get(ItemService))
         await bot.set_webhook(
             url=f"{settings.webhook_url}/webhook",
             allowed_updates=dp.resolve_used_update_types(),
             drop_pending_updates=True,
         )
+        await dp.startup.trigger()
 
         yield
+        await dp.shutdown.trigger()
         await app.state.dishka_container.close()
 
     app = create_app(lifespan=lifespan)

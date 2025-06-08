@@ -67,30 +67,40 @@ class RepositoryProvider(Provider):
 
 
 class ServiceProvider(Provider):
-    @provide(scope=Scope.REQUEST)
-    def get_user_service(self, repo: UserRepo) -> UserService:
-        return UserService(repo)
+    @provide(
+        scope=Scope.REQUEST,
+        provides=AnyOf[UserService, UserWriter, UserReader, UserDeleter, UserUpdater],
+    )
+    def get_user_service(
+        self, repo: UserRepo, inv_repo: InventoryRepo, item_repo: ItemRepo
+    ):
+        return UserService(repo, inv_repo, item_repo)
 
-    @provide(scope=Scope.REQUEST)
-    def get_item_service(
-        self, repo: ItemRepo
-    ) -> AnyOf[ItemReader, ItemWriter, ItemDeleter, ItemService]:
+    @provide(
+        scope=Scope.REQUEST,
+        provides=AnyOf[ItemReader, ItemWriter, ItemDeleter, ItemService],
+    )
+    def get_item_service(self, repo: ItemRepo):
         return ItemService(repo)
 
-    @provide(scope=Scope.REQUEST)
-    def get_craft_service(
-        self, repo: CraftRepo
-    ) -> AnyOf[CraftReader, CraftWriter, CraftDeleter, CraftService]:
+    @provide(
+        scope=Scope.REQUEST,
+        provides=AnyOf[CraftReader, CraftWriter, CraftDeleter, CraftService],
+    )
+    def get_craft_service(self, repo: CraftRepo):
         return CraftService(repo)
 
-    @provide(scope=Scope.REQUEST)
-    def get_inventory_service(
-        self, repo: InventoryRepo, item_repo: ItemRepo
-    ) -> AnyOf[InventoryReader, InventoryWriter, InventoryDeleter, InventoryService]:
+    @provide(
+        scope=Scope.REQUEST,
+        provides=AnyOf[
+            InventoryReader, InventoryWriter, InventoryDeleter, InventoryService
+        ],
+    )
+    def get_inventory_service(self, repo: InventoryRepo, item_repo: ItemRepo):
         return InventoryService(repo, item_repo)
 
-    @provide(scope=Scope.REQUEST)
-    def get_ai_service(self, settings: Settings) -> AnyOf[ItemGenerator, AiService]:
+    @provide(scope=Scope.REQUEST, provides=AnyOf[ItemGenerator, AiService])
+    def get_ai_service(self, settings: Settings):
         ai_client = AsyncOpenAI(
             api_key=settings.ai_token, base_url="https://openrouter.ai/api/v1"
         )

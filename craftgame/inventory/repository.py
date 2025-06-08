@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import insert, update, delete, select
+from sqlalchemy import insert, update, delete, select, ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from craftgame.inventory.interfaces.repo import InventoryRepo
@@ -19,14 +19,16 @@ class InventoryRepository(InventoryRepo):
         return result.one()
 
     async def find_one_inventory_filtered(
-        self, filters: dict[str, Any]
+        self, filters: ColumnElement[bool]
     ) -> Inventory | None:
-        stmt = select(Inventory).where(**filters)
+        stmt = select(Inventory).where(filters)
         result = await self.session.scalars(stmt)
         return result.one_or_none()
 
-    async def find_all_inventories(self, filters: dict[str, Any]) -> list[Inventory]:
-        stmt = select(Inventory).where(**filters)
+    async def find_all_inventories(
+        self, filters: ColumnElement[bool]
+    ) -> list[Inventory]:
+        stmt = select(Inventory).where(filters)
         result = await self.session.scalars(stmt)
         return list(result.all())
 

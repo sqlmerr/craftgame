@@ -1,6 +1,8 @@
 from typing import Protocol, Any
 from uuid import UUID
 
+from sqlalchemy import ColumnElement
+
 from craftgame.craft.model import Craft
 
 
@@ -8,7 +10,9 @@ class CraftRepo(Protocol):
     async def create_craft(self, data: dict[str, Any]) -> UUID:
         raise NotImplementedError
 
-    async def find_one_craft_filtered(self, filters: dict[str, Any]) -> Craft | None:
+    async def find_one_craft_filtered(
+        self, filters: ColumnElement[bool]
+    ) -> Craft | None:
         raise NotImplementedError
 
     async def find_one_craft_by_ingredients(
@@ -16,7 +20,7 @@ class CraftRepo(Protocol):
     ) -> Craft | None:
         raise NotImplementedError
 
-    async def find_all_crafts(self, filters: dict[str, Any]) -> list[Craft]:
+    async def find_all_crafts(self, filters: ColumnElement[bool]) -> list[Craft]:
         raise NotImplementedError
 
     async def update_craft(self, craft_id: UUID, data: dict[str, Any]):

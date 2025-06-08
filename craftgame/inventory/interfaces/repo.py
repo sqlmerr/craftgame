@@ -1,6 +1,8 @@
 from typing import Protocol, Any
 from uuid import UUID
 
+from sqlalchemy import ColumnElement
+
 from craftgame.inventory.model import Inventory
 
 
@@ -9,11 +11,13 @@ class InventoryRepo(Protocol):
         raise NotImplementedError
 
     async def find_one_inventory_filtered(
-        self, filters: dict[str, Any]
+        self, filters: ColumnElement[bool]
     ) -> Inventory | None:
         raise NotImplementedError
 
-    async def find_all_inventories(self, filters: dict[str, Any]) -> list[Inventory]:
+    async def find_all_inventories(
+        self, filters: ColumnElement[bool]
+    ) -> list[Inventory]:
         raise NotImplementedError
 
     async def update_inventory(self, inventory_id: UUID, data: dict[str, Any]):

@@ -8,10 +8,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 from craftgame.config import Settings
 from craftgame.common.base import Base
-from craftgame.user.model import User  # noqa, for correct autogenerate
-from craftgame.craft.model import Craft  # noqa, for correct autogenerate
-from craftgame.item.model import Item  # noqa, for correct autogenerate
-from craftgame.inventory.model import Inventory  # noqa, for correct autogenerate
+from craftgame.user.model import User  # noqa: F401
+from craftgame.craft.model import Craft  # noqa: F401
+from craftgame.item.model import Item  # noqa: F401
+from craftgame.inventory.model import Inventory  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
