@@ -1,13 +1,11 @@
-from uuid import UUID
-
 from aiogram import Router, F
-from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from dishka import FromDishka
 
 from craftgame.ai.dto import GenerateItemDTO
 from craftgame.ai.interfaces.item_generator import ItemGenerator
+from craftgame.common.exceptions import NotFound
 from craftgame.craft.dto import CreateCraftDTO
 from craftgame.craft.service import CraftService
 from craftgame.inventory.dto import CreateInventoryDTO
@@ -26,7 +24,7 @@ from craftgame.presentation.bot.keyboards import (
     ingredients_keyboard,
 )
 from craftgame.presentation.bot.states import CraftMenuState
-from craftgame.presentation.bot.util import normalize_snake_case
+from craftgame.util import normalize_snake_case
 from craftgame.user.dto import UserDTO
 
 router = Router()
@@ -68,7 +66,7 @@ async def choose_ingredients(
         items.append(item)
 
     keyboard = ingredients_keyboard(place=callback_data.place, items=items)
-    await call.message.edit_text("<i>Select ingredient</i>", reply_markup=keyboard)
+    await call.message.edit_text("Select ingredient", reply_markup=keyboard)
 
 
 @router.callback_query(CraftMenuState.main, IngredientSelectData.filter())
@@ -82,7 +80,8 @@ async def select_ingredient(
 
     await state.update_data(
         {
-            f"ingredient{callback_data.place if callback_data.place == 1 else 2}": callback_data.ingredient_id
+            f"ingredient{callback_data.place if callback_data.place == 1 else 2}":
+                callback_data.ingredient_id
         }
     )
     data = await state.get_data()
@@ -92,7 +91,7 @@ async def select_ingredient(
 
     keyboard = choose_ingredients_keyboard(ingredient1, ingredient2)
     await call.message.edit_text(
-        "<i>Select items to craft from</i>", reply_markup=keyboard
+        "Select items to craft from", reply_markup=keyboard
     )
 
 
@@ -100,7 +99,6 @@ async def select_ingredient(
 async def craft_result(
     call: CallbackQuery,
     state: FSMContext,
-    callback_data: CraftResultData,
     user: UserDTO,
     item_service: FromDishka[ItemService],
     item_generator: FromDishka[ItemGenerator],
@@ -131,9 +129,14 @@ async def craft_result(
                 )
             )
 
-        craft = await craft_service.create_craft(
-            CreateCraftDTO(result_item_id=item.id, ingredients_ids=[ingr1.id, ingr2.id])
-        )
+        try:
+            craft = await craft_service.get_item_craft(item.id)
+        except NotFound:
+            craft = None
+        if not craft:
+            craft = await craft_service.create_craft(
+                CreateCraftDTO(result_item_id=item.id, ingredients_ids=[ingr1.id, ingr2.id])
+            )
         item_in_inventory = (
             await inventory_service.get_inventory_by_item_id_and_user_id(
                 craft.result_item_id, user_id=user.id
@@ -162,10 +165,10 @@ async def craft_result(
         text=(
             f"<b>You crafted item</b> <code>{item.emoji} {normalize_snake_case(item.name)}</code>!\n"
             + (
-                f"Congratulations, you've discovered new item!\n"
+                "Congratulations, you've discovered new item!\n"
                 if discovered_new_item
                 else ""
             )
-            + (f"It's new item in your inventory!" if new_item_in_inventory else "")
+            + ("It's new item in your inventory!" if new_item_in_inventory else "")
         )
     )

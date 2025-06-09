@@ -54,7 +54,7 @@ def main() -> FastAPI:
             allowed_updates=dp.resolve_used_update_types(),
             drop_pending_updates=True,
         )
-        await dp.startup.trigger()
+        await dp.startup.trigger(bot=bot)
 
         yield
         await dp.shutdown.trigger()

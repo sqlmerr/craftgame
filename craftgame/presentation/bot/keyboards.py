@@ -8,7 +8,7 @@ from craftgame.presentation.bot.calldata import (
     CraftResultData,
     IngredientSelectData,
 )
-from craftgame.presentation.bot.util import normalize_snake_case
+from craftgame.util import normalize_snake_case
 
 
 def main_menu_keyboard():

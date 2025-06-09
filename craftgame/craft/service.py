@@ -47,19 +47,17 @@ class CraftService(CraftDeleter, CraftReader, CraftWriter):
             ingredients_ids=[craft.ingredient1_id, craft.ingredient2_id],
         )
 
-    async def get_item_crafts(self, item_id: UUID) -> list[CraftDTO]:
-        crafts = await self.repo.find_all_crafts(Craft.result_item_id == item_id)
-        dtos = []
-        for craft in crafts:
-            dtos.append(
-                CraftDTO(
-                    id=craft.id,
-                    result_item_id=craft.result_item_id,
-                    ingredients_ids=[craft.ingredient1_id, craft.ingredient2_id],
-                )
-            )
+    async def get_item_craft(self, item_id: UUID) -> CraftDTO:
+        craft = await self.repo.find_one_craft_filtered(Craft.result_item_id == item_id)
+        if not craft:
+            raise NotFound
+        dto = CraftDTO(
+            id=craft.id,
+            result_item_id=craft.result_item_id,
+            ingredients_ids=[craft.ingredient1_id, craft.ingredient2_id],
+        )
 
-        return dtos
+        return dto
 
     async def delete_craft(self, craft_id: UUID) -> None:
         await self.repo.delete_craft(craft_id)
