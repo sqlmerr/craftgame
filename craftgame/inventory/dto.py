@@ -3,13 +3,15 @@ from uuid import UUID
 
 
 @dataclass(frozen=True)
-class InventoryDTO:
+class InventoryItemDTO:
     id: UUID
     user_id: UUID
     item_id: UUID
+    count: int
 
 
 @dataclass(frozen=True)
-class CreateInventoryDTO:
+class CreateInventoryItemDTO:
     user_id: UUID
     item_id: UUID
+    count: int = 1

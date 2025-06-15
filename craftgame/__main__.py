@@ -1,6 +1,7 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
+import logging
+
+from contextlib import asynccontextmanager
 from aiogram.types import Update
 from fastapi import FastAPI, Request
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
@@ -50,7 +51,7 @@ def main() -> FastAPI:
         async with container() as c:
             await create_initial_data(await c.get(ItemService))
         await bot.set_webhook(
-            url=f"{settings.webhook_url}/webhook",
+            url=f"{settings.webhook_url}webhook",
             allowed_updates=dp.resolve_used_update_types(),
             drop_pending_updates=True,
         )
@@ -58,6 +59,7 @@ def main() -> FastAPI:
 
         yield
         await dp.shutdown.trigger()
+        await bot.session.close()
         await app.state.dishka_container.close()
 
     app = create_app(lifespan=lifespan)
@@ -72,4 +74,4 @@ def main() -> FastAPI:
 
 
 if __name__ == "__main__":
-    uvicorn.run(main, factory=True)
+    uvicorn.run(main, factory=True, host="0.0.0.0", port=8000)

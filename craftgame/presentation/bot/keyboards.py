@@ -20,11 +20,11 @@ def main_menu_keyboard():
     return b.as_markup()
 
 
-def inventory_keyboard(items: list[ItemDTO]):
+def inventory_keyboard(items_with_counts: list[tuple[ItemDTO, int]]):
     b = InlineKeyboardBuilder()
-    for i in items:
+    for i, count in items_with_counts:
         b.button(
-            text=f"{i.emoji} {normalize_snake_case(i.name)}",
+            text=f"{i.emoji} {normalize_snake_case(i.name)} {count}",
             callback_data=OpenItemData(item_id=i.id).pack(),
         )
     b.adjust(3)
@@ -63,11 +63,11 @@ def choose_ingredients_keyboard(
     return b.as_markup()
 
 
-def ingredients_keyboard(place: int, items: list[ItemDTO]):
+def ingredients_keyboard(place: int, items_with_counts: list[tuple[ItemDTO, int]]):
     b = InlineKeyboardBuilder()
-    for i in items:
+    for i, count in items_with_counts:
         b.button(
-            text=f"{i.emoji} {normalize_snake_case(i.name)}",
+            text=f"{i.emoji} {normalize_snake_case(i.name)} {count}",
             callback_data=IngredientSelectData(ingredient_id=i.id, place=place),
         )
     b.adjust(3)

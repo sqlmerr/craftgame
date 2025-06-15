@@ -11,7 +11,7 @@ from craftgame.common.base import Base
 from craftgame.user.model import User  # noqa: F401
 from craftgame.craft.model import Craft  # noqa: F401
 from craftgame.item.model import Item  # noqa: F401
-from craftgame.inventory.model import Inventory  # noqa: F401
+from craftgame.inventory.model import InventoryItem  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

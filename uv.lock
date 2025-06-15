@@ -175,7 +175,7 @@ wheels = [
 
 [[package]]
 name = "craftgame"
-version = "0.1.2"
+version = "0.3.1"
 source = { virtual = "." }
 dependencies = [
     { name = "aiogram" },

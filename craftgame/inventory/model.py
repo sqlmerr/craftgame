@@ -8,10 +8,12 @@ from craftgame.item.model import Item
 from craftgame.user.model import User
 
 
-class Inventory(Base):
-    __tablename__ = "inventory"
+class InventoryItem(Base):
+    __tablename__ = "inventory_items"
     user: Mapped[User] = relationship()
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
 
     item: Mapped[Item] = relationship()
     item_id: Mapped[UUID] = mapped_column(ForeignKey("items.id"))
+
+    count: Mapped[int] = mapped_column(default=1)

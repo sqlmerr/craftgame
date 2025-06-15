@@ -49,7 +49,7 @@ class UserService(UserReader, UserWriter, UserDeleter, UserUpdater):
 
         for i in ["water", "fire", "wind", "earth"]:
             item = await self.item_repo.find_one_item_filtered(Item.name == i)
-            await self.inventory_repo.create_inventory(
+            await self.inventory_repo.create_inventory_item(
                 dict(user_id=user_id, item_id=item.id)
             )
 

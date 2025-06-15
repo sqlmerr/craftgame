@@ -3,25 +3,25 @@ from uuid import UUID
 
 from sqlalchemy import ColumnElement
 
-from craftgame.inventory.model import Inventory
+from craftgame.inventory.model import InventoryItem
 
 
 class InventoryRepo(Protocol):
-    async def create_inventory(self, data: dict[str, Any]) -> UUID:
+    async def create_inventory_item(self, data: dict[str, Any]) -> UUID:
         raise NotImplementedError
 
-    async def find_one_inventory_filtered(
+    async def find_one_inventory_item_filtered(
         self, filters: ColumnElement[bool]
-    ) -> Inventory | None:
+    ) -> InventoryItem | None:
         raise NotImplementedError
 
-    async def find_all_inventories(
+    async def find_all_inventory_items(
         self, filters: ColumnElement[bool]
-    ) -> list[Inventory]:
+    ) -> list[InventoryItem]:
         raise NotImplementedError
 
-    async def update_inventory(self, inventory_id: UUID, data: dict[str, Any]):
+    async def update_inventory_item(self, inventory_id: UUID, data: dict[str, Any]):
         raise NotImplementedError
 
-    async def delete_inventory(self, inventory_id: UUID) -> None:
+    async def delete_inventory_item(self, inventory_id: UUID) -> None:
         raise NotImplementedError

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyUrl, UrlConstraints, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,7 +16,7 @@ class PostgresConfig(BaseModel):
 class Settings(BaseSettings):
     ai_token: str
     bot_token: str
-    webhook_url: str
+    webhook_url: HttpUrl
 
     postgres: PostgresConfig = PostgresConfig()
 

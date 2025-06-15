@@ -6,36 +6,36 @@ from sqlalchemy import insert, update, delete, select, ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from craftgame.inventory.interfaces.repo import InventoryRepo
-from craftgame.inventory.model import Inventory
+from craftgame.inventory.model import InventoryItem
 
 
 @dataclass(frozen=True)
 class InventoryRepository(InventoryRepo):
     session: AsyncSession
 
-    async def create_inventory(self, data: dict[str, Any]) -> UUID:
-        stmt = insert(Inventory).values(data).returning(Inventory.id)
+    async def create_inventory_item(self, data: dict[str, Any]) -> UUID:
+        stmt = insert(InventoryItem).values(data).returning(InventoryItem.id)
         result = await self.session.scalars(stmt)
         return result.one()
 
-    async def find_one_inventory_filtered(
+    async def find_one_inventory_item_filtered(
         self, filters: ColumnElement[bool]
-    ) -> Inventory | None:
-        stmt = select(Inventory).where(filters)
+    ) -> InventoryItem | None:
+        stmt = select(InventoryItem).where(filters)
         result = await self.session.scalars(stmt)
         return result.one_or_none()
 
-    async def find_all_inventories(
+    async def find_all_inventory_items(
         self, filters: ColumnElement[bool]
-    ) -> list[Inventory]:
-        stmt = select(Inventory).where(filters)
+    ) -> list[InventoryItem]:
+        stmt = select(InventoryItem).where(filters)
         result = await self.session.scalars(stmt)
         return list(result.all())
 
-    async def update_inventory(self, inventory_id: UUID, data: dict[str, Any]):
-        stmt = update(Inventory).values(data).where(Inventory.id == inventory_id)
+    async def update_inventory_item(self, inventory_id: UUID, data: dict[str, Any]):
+        stmt = update(InventoryItem).values(data).where(InventoryItem.id == inventory_id)
         await self.session.execute(stmt)
 
-    async def delete_inventory(self, inventory_id: UUID) -> None:
-        stmt = delete(Inventory).where(Inventory.id == inventory_id)
+    async def delete_inventory_item(self, inventory_id: UUID) -> None:
+        stmt = delete(InventoryItem).where(InventoryItem.id == inventory_id)
         await self.session.execute(stmt)

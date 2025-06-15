@@ -8,7 +8,7 @@ from craftgame.ai.interfaces.item_generator import ItemGenerator
 from craftgame.common.exceptions import NotFound
 from craftgame.craft.dto import CreateCraftDTO
 from craftgame.craft.service import CraftService
-from craftgame.inventory.dto import CreateInventoryDTO
+from craftgame.inventory.dto import CreateInventoryItemDTO
 from craftgame.inventory.interfaces.reader import InventoryReader
 from craftgame.inventory.service import InventoryService
 from craftgame.item.dto import CreateItemDTO
@@ -63,9 +63,9 @@ async def choose_ingredients(
     items = []
     for i in inventory:
         item = await item_reader.get_item_by_id(i.item_id)
-        items.append(item)
+        items.append((item, i.count))
 
-    keyboard = ingredients_keyboard(place=callback_data.place, items=items)
+    keyboard = ingredients_keyboard(place=callback_data.place, items_with_counts=items)
     await call.message.edit_text("Select ingredient", reply_markup=keyboard)
 
 
@@ -138,25 +138,25 @@ async def craft_result(
                 CreateCraftDTO(result_item_id=item.id, ingredients_ids=[ingr1.id, ingr2.id])
             )
         item_in_inventory = (
-            await inventory_service.get_inventory_by_item_id_and_user_id(
+            await inventory_service.get_inventory_item_by_item_id_and_user_id(
                 craft.result_item_id, user_id=user.id
             )
         )
         if not item_in_inventory:
             new_item_in_inventory = True
-            await inventory_service.create_inventory(
-                CreateInventoryDTO(user_id=user.id, item_id=craft.result_item_id)
+            await inventory_service.add_inventory_item(
+                CreateInventoryItemDTO(user_id=user.id, item_id=craft.result_item_id)
             )
     else:
         item_in_inventory = (
-            await inventory_service.get_inventory_by_item_id_and_user_id(
+            await inventory_service.get_inventory_item_by_item_id_and_user_id(
                 craft.result_item_id, user_id=user.id
             )
         )
         if not item_in_inventory:
             new_item_in_inventory = True
-            await inventory_service.create_inventory(
-                CreateInventoryDTO(user_id=user.id, item_id=craft.result_item_id)
+            await inventory_service.add_inventory_item(
+                CreateInventoryItemDTO(user_id=user.id, item_id=craft.result_item_id)
             )
         item = await item_service.get_item_by_id(craft.result_item_id)
 

@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from ..dto import CreateInventoryDTO, InventoryDTO
+from ..dto import CreateInventoryItemDTO, InventoryItemDTO
 
 
 class InventoryWriter(Protocol):
-    async def create_inventory(self, data: CreateInventoryDTO) -> InventoryDTO:
+    async def add_inventory_item(self, data: CreateInventoryItemDTO) -> InventoryItemDTO:
         raise NotImplementedError

@@ -28,7 +28,7 @@ async def inventory_menu(
     items = []
     for i in inventory:
         item = await item_reader.get_item_by_id(i.item_id)
-        items.append(item)
+        items.append((item, i.count))
 
     reply_markup = inventory_keyboard(items)
     if isinstance(event, CallbackQuery):
@@ -47,7 +47,7 @@ async def item_info_menu(
         craft_reader: FromDishka[CraftReader],
 ):
     await call.answer()
-    inv = await inventory_reader.get_inventory_by_item_id_and_user_id(item_id=callback_data.item_id, user_id=user.id)
+    inv = await inventory_reader.get_inventory_item_by_item_id_and_user_id(item_id=callback_data.item_id, user_id=user.id)
     if not inv:
         return
 
@@ -65,7 +65,7 @@ async def item_info_menu(
         ingredient1 = await item_reader.get_item_by_id(craft.ingredients_ids[0])
         ingredient2 = await item_reader.get_item_by_id(craft.ingredients_ids[1])
 
-    text = f"Item <code>{item.emoji} {normalize_snake_case(item.name)}</code>\n"
+    text = f"{inv.count} Item <code>{item.emoji} {normalize_snake_case(item.name)}</code>\n"
     text += "<i>Opened by you</i>\n" if item.opened_by_id == user.id else ""
     text += f"<blockquote><i>Crafted from:</i>\n<code>{ingredient1.item_name}</code> + <code>{ingredient2.item_name}</code></blockquote>" if craft else ""
 
