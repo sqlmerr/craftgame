@@ -1,4 +1,4 @@
-from pydantic import BaseModel, AnyUrl, UrlConstraints, HttpUrl
+from pydantic import BaseModel, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

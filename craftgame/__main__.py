@@ -1,5 +1,4 @@
 import uvicorn
-import logging
 
 from contextlib import asynccontextmanager
 from aiogram.types import Update
@@ -8,14 +7,14 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 
 from craftgame.config import Settings
 from craftgame.di import init_di
-from craftgame.item.dto import CreateItemDTO
-from craftgame.item.model import Item
-from craftgame.item.service import ItemService
-from craftgame.presentation.api import create_app
+from craftgame.dto.item import CreateItemDTO
+from craftgame.models.item import Item
+from craftgame.core.services.item import ItemService
+from craftgame.api import create_app
 from dishka.integrations.fastapi import setup_dishka
 from dishka.integrations.aiogram import setup_dishka as setup_aiogram_dishka
 
-from craftgame.presentation.bot import init_bot, init_dispatcher
+from craftgame.bot import init_bot, init_dispatcher
 
 
 def init_db(settings: Settings) -> async_sessionmaker[AsyncSession]:

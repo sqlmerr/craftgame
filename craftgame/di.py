@@ -5,31 +5,31 @@ from dishka import Provider, provide, AnyOf, Scope, AsyncContainer, make_async_c
 from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from craftgame.ai.interfaces.item_generator import ItemGenerator
-from craftgame.ai.service import AiService
+from craftgame.core.interfaces.ai.item_generator import ItemGenerator
+from craftgame.core.services.ai import AiService
 from craftgame.config import Settings
-from craftgame.craft.interfaces.deleter import CraftDeleter
-from craftgame.craft.interfaces.reader import CraftReader
-from craftgame.craft.interfaces.repo import CraftRepo
-from craftgame.craft.interfaces.writer import CraftWriter
-from craftgame.craft.repository import CraftRepository
-from craftgame.craft.service import CraftService
-from craftgame.inventory.interfaces.deleter import InventoryDeleter
-from craftgame.inventory.interfaces.reader import InventoryReader
-from craftgame.inventory.interfaces.repo import InventoryRepo
-from craftgame.inventory.interfaces.writer import InventoryWriter
-from craftgame.inventory.repository import InventoryRepository
-from craftgame.inventory.service import InventoryService
-from craftgame.item.interfaces.deleter import ItemDeleter
-from craftgame.item.interfaces.reader import ItemReader
-from craftgame.item.interfaces.repo import ItemRepo
-from craftgame.item.interfaces.writer import ItemWriter
-from craftgame.item.repository import ItemRepository
-from craftgame.item.service import ItemService
-from craftgame.user.interfaces import UserReader, UserWriter, UserUpdater, UserDeleter
-from craftgame.user.interfaces.repo import UserRepo
-from craftgame.user.repository import UserRepository
-from craftgame.user.service import UserService
+from craftgame.core.interfaces.craft.deleter import CraftDeleter
+from craftgame.core.interfaces.craft.reader import CraftReader
+from craftgame.core.interfaces.craft.repo import CraftRepo
+from craftgame.core.interfaces.craft.writer import CraftWriter
+from craftgame.database.repositories.craft import CraftRepository
+from craftgame.core.services.craft import CraftService
+from craftgame.core.interfaces.inventory.deleter import InventoryDeleter
+from craftgame.core.interfaces.inventory.reader import InventoryReader
+from craftgame.core.interfaces.inventory.repo import InventoryRepo
+from craftgame.core.interfaces.inventory.writer import InventoryWriter
+from craftgame.database.repositories.inventory import InventoryRepository
+from craftgame.core.services.inventory import InventoryService
+from craftgame.core.interfaces.item.deleter import ItemDeleter
+from craftgame.core.interfaces.item.reader import ItemReader
+from craftgame.core.interfaces.item.repo import ItemRepo
+from craftgame.core.interfaces.item.writer import ItemWriter
+from craftgame.database.repositories.item import ItemRepository
+from craftgame.core.services.item import ItemService
+from craftgame.core.interfaces.user import UserReader, UserWriter, UserUpdater, UserDeleter
+from craftgame.core.interfaces.user.repo import UserRepo
+from craftgame.database.repositories.user import UserRepository
+from craftgame.core.services.user import UserService
 
 
 class DatabaseProvider(Provider):
