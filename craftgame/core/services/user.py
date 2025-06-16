@@ -8,7 +8,13 @@ from craftgame.core.interfaces.item.repo import ItemRepo
 from craftgame.models.item import Item
 from craftgame.dto.user import UserDTO, CreateUserDTO, UpdateUserDTO
 from craftgame.exceptions.user import UserWithThisTelegramIdAlreadyExists
-from craftgame.core.interfaces.user import UserReader, UserWriter, UserDeleter, UserUpdater, UserRepo
+from craftgame.core.interfaces.user import (
+    UserReader,
+    UserWriter,
+    UserDeleter,
+    UserUpdater,
+    UserRepo,
+)
 from craftgame.models.user import User
 
 

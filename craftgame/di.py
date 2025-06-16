@@ -26,7 +26,12 @@ from craftgame.core.interfaces.item.repo import ItemRepo
 from craftgame.core.interfaces.item.writer import ItemWriter
 from craftgame.database.repositories.item import ItemRepository
 from craftgame.core.services.item import ItemService
-from craftgame.core.interfaces.user import UserReader, UserWriter, UserUpdater, UserDeleter
+from craftgame.core.interfaces.user import (
+    UserReader,
+    UserWriter,
+    UserUpdater,
+    UserDeleter,
+)
 from craftgame.core.interfaces.user.repo import UserRepo
 from craftgame.database.repositories.user import UserRepository
 from craftgame.core.services.user import UserService

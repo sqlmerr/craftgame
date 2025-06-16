@@ -19,6 +19,4 @@ async def start_cmd(event: Message | CallbackQuery):
         )
         await event.answer("<i>Main menu</i>", reply_markup=main_menu_keyboard())
     else:
-        await event.message.edit_text(
-            "Main menu", reply_markup=main_menu_keyboard()
-        )
+        await event.message.edit_text("Main menu", reply_markup=main_menu_keyboard())

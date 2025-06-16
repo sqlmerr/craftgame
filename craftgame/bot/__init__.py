@@ -17,7 +17,7 @@ def init_bot(settings: Settings) -> Bot:
 async def on_start(bot: Bot):
     commands = [
         BotCommand(command="start", description="Restart bot"),
-        BotCommand(command="inventory", description="Open your inventory")
+        BotCommand(command="inventory", description="Open your inventory"),
     ]
     await bot.set_my_commands(commands, scope=BotCommandScopeDefault())
 

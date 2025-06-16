@@ -5,7 +5,9 @@ from craftgame.dto.inventory import InventoryItemDTO
 
 
 class InventoryReader(Protocol):
-    async def get_inventory_item_by_id(self, inventory_id: UUID) -> InventoryItemDTO | None:
+    async def get_inventory_item_by_id(
+        self, inventory_id: UUID
+    ) -> InventoryItemDTO | None:
         raise NotImplementedError
 
     async def get_inventory_item_by_item_id_and_user_id(

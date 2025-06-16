@@ -33,7 +33,9 @@ class InventoryRepository(InventoryRepo):
         return list(result.all())
 
     async def update_inventory_item(self, inventory_id: UUID, data: dict[str, Any]):
-        stmt = update(InventoryItem).values(data).where(InventoryItem.id == inventory_id)
+        stmt = (
+            update(InventoryItem).values(data).where(InventoryItem.id == inventory_id)
+        )
         await self.session.execute(stmt)
 
     async def delete_inventory_item(self, inventory_id: UUID) -> None:

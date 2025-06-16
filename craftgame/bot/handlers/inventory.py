@@ -39,15 +39,17 @@ async def inventory_menu(
 
 @router.callback_query(OpenItemData.filter())
 async def item_info_menu(
-        call: CallbackQuery,
-        user: UserDTO,
-        callback_data: OpenItemData,
-        inventory_reader: FromDishka[InventoryReader],
-        item_reader: FromDishka[ItemReader],
-        craft_reader: FromDishka[CraftReader],
+    call: CallbackQuery,
+    user: UserDTO,
+    callback_data: OpenItemData,
+    inventory_reader: FromDishka[InventoryReader],
+    item_reader: FromDishka[ItemReader],
+    craft_reader: FromDishka[CraftReader],
 ):
     await call.answer()
-    inv = await inventory_reader.get_inventory_item_by_item_id_and_user_id(item_id=callback_data.item_id, user_id=user.id)
+    inv = await inventory_reader.get_inventory_item_by_item_id_and_user_id(
+        item_id=callback_data.item_id, user_id=user.id
+    )
     if not inv:
         return
 
@@ -67,8 +69,16 @@ async def item_info_menu(
 
     text = f"{inv.count} Item <code>{item.emoji} {normalize_snake_case(item.name)}</code>\n"
     text += "<i>Opened by you</i>\n" if item.opened_by_id == user.id else ""
-    text += f"<blockquote><i>Crafted from:</i>\n<code>{ingredient1.item_name}</code> + <code>{ingredient2.item_name}</code></blockquote>" if craft else ""
+    text += (
+        f"<blockquote><i>Crafted from:</i>\n<code>{ingredient1.item_name}</code> + <code>{ingredient2.item_name}</code></blockquote>"
+        if craft
+        else ""
+    )
 
-    reply_markup = InlineKeyboardBuilder().button(text="← back", callback_data="open_inventory").as_markup()
+    reply_markup = (
+        InlineKeyboardBuilder()
+        .button(text="← back", callback_data="open_inventory")
+        .as_markup()
+    )
 
     await call.message.edit_text(text, reply_markup=reply_markup)

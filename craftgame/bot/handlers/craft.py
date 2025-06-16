@@ -80,8 +80,7 @@ async def select_ingredient(
 
     await state.update_data(
         {
-            f"ingredient{callback_data.place if callback_data.place == 1 else 2}":
-                callback_data.ingredient_id
+            f"ingredient{callback_data.place if callback_data.place == 1 else 2}": callback_data.ingredient_id
         }
     )
     data = await state.get_data()
@@ -90,9 +89,7 @@ async def select_ingredient(
     ingredient2 = await item_reader.get_item_by_id(data.get("ingredient2"))
 
     keyboard = choose_ingredients_keyboard(ingredient1, ingredient2)
-    await call.message.edit_text(
-        "Select items to craft from", reply_markup=keyboard
-    )
+    await call.message.edit_text("Select items to craft from", reply_markup=keyboard)
 
 
 @router.callback_query(CraftMenuState.main, CraftResultData.filter())
@@ -135,7 +132,9 @@ async def craft_result(
             craft = None
         if not craft:
             craft = await craft_service.create_craft(
-                CreateCraftDTO(result_item_id=item.id, ingredients_ids=[ingr1.id, ingr2.id])
+                CreateCraftDTO(
+                    result_item_id=item.id, ingredients_ids=[ingr1.id, ingr2.id]
+                )
             )
         item_in_inventory = (
             await inventory_service.get_inventory_item_by_item_id_and_user_id(
