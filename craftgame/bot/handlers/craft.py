@@ -5,7 +5,7 @@ from dishka import FromDishka
 
 from craftgame.dto.ai import GenerateItemDTO
 from craftgame.core.interfaces.ai.item_generator import ItemGenerator
-from craftgame.exceptions.common import NotFound
+from craftgame.exceptions.common import NotFound, ServerError
 from craftgame.dto.craft import CreateCraftDTO
 from craftgame.core.services.craft import CraftService
 from craftgame.dto.inventory import CreateInventoryItemDTO
@@ -62,6 +62,8 @@ async def choose_ingredients(
     inventory = await inventory_reader.get_all_inventory_items_by_user(user.id)
     items = []
     for i in inventory:
+        if i.count <= 0:
+            continue
         item = await item_reader.get_item_by_id(i.item_id)
         items.append((item, i.count))
 
@@ -74,7 +76,9 @@ async def select_ingredient(
     call: CallbackQuery,
     state: FSMContext,
     callback_data: IngredientSelectData,
+    user: UserDTO,
     item_reader: FromDishka[ItemReader],
+    inventory_reader: FromDishka[InventoryReader],
 ):
     await call.answer()
 
@@ -84,9 +88,23 @@ async def select_ingredient(
         }
     )
     data = await state.get_data()
+    ingredient_inventory_item = await inventory_reader.get_inventory_item_by_item_id_and_user_id(callback_data.ingredient_id, user.id)
+    if ingredient_inventory_item.count <= 0:
+        await call.answer("please select another ingredient")
+        return
 
     ingredient1 = await item_reader.get_item_by_id(data.get("ingredient1"))
     ingredient2 = await item_reader.get_item_by_id(data.get("ingredient2"))
+
+    ingredient1_inventory_item = await inventory_reader.get_inventory_item_by_item_id_and_user_id(data.get("ingredient1"), user.id)
+    ingredient2_inventory_item = await inventory_reader.get_inventory_item_by_item_id_and_user_id(data.get("ingredient2"), user.id)
+
+    if ingredient1_inventory_item and ingredient1_inventory_item.count <= 0:
+        await call.answer("please try again")
+        return
+    if ingredient2_inventory_item and ingredient2_inventory_item.count <= 0:
+        await call.answer("please try again")
+        return
 
     keyboard = choose_ingredients_keyboard(ingredient1, ingredient2)
     await call.message.edit_text("Select items to craft from", reply_markup=keyboard)
@@ -110,6 +128,12 @@ async def craft_result(
     craft = await craft_service.repo.find_one_craft_by_ingredients(
         data["ingredient1"], data["ingredient2"]
     )
+    ingredient1_inventory_item = await inventory_service.get_inventory_item_by_item_id_and_user_id(data["ingredient1"], user.id)
+    ingredient2_inventory_item = await inventory_service.get_inventory_item_by_item_id_and_user_id(data["ingredient2"], user.id)
+
+    if not (ingredient1_inventory_item and ingredient2_inventory_item and ingredient1_inventory_item.count > 0 and ingredient2_inventory_item.count > 0):
+        raise ServerError
+
     if not craft:
         ingr1 = await item_service.get_item_by_id(data["ingredient1"])
         ingr2 = await item_service.get_item_by_id(data["ingredient2"])
@@ -154,10 +178,13 @@ async def craft_result(
         )
         if not item_in_inventory:
             new_item_in_inventory = True
-            await inventory_service.add_inventory_item(
-                CreateInventoryItemDTO(user_id=user.id, item_id=craft.result_item_id)
-            )
+        await inventory_service.add_inventory_item(
+            CreateInventoryItemDTO(user_id=user.id, item_id=craft.result_item_id)
+        )
         item = await item_service.get_item_by_id(craft.result_item_id)
+
+    await inventory_service.set_inventory_item_count(ingredient1_inventory_item.id, ingredient1_inventory_item.count - 1)
+    await inventory_service.set_inventory_item_count(ingredient2_inventory_item.id, ingredient2_inventory_item.count - 1)
 
     await state.clear()
     await call.message.edit_text(

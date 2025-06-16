@@ -7,6 +7,7 @@ from craftgame.core.interfaces.inventory.deleter import InventoryDeleter
 from craftgame.core.interfaces.inventory.reader import InventoryReader
 from craftgame.core.interfaces.inventory.repo import InventoryRepo
 from craftgame.core.interfaces.inventory.writer import InventoryWriter
+from craftgame.exceptions.inventory import InvalidInventoryItemCount
 from craftgame.models.inventory import InventoryItem
 from craftgame.core.interfaces.item.repo import ItemRepo
 from craftgame.models.item import Item
@@ -75,6 +76,17 @@ class InventoryService(InventoryReader, InventoryWriter, InventoryDeleter):
 
         inventory_id = await self.repo.create_inventory_item(data.__dict__)
         return await self.get_inventory_item_by_id(inventory_id)
+
+    async def set_inventory_item_count(self, inventory_item_id: UUID, count: int) -> None:
+        item = await self.get_inventory_item_by_id(inventory_item_id)
+        if not item:
+            raise NotFound
+
+        if count < 0:
+            raise InvalidInventoryItemCount
+
+        await self.repo.update_inventory_item(inventory_item_id, {"count": count})
+
 
     async def delete_inventory_item(self, inventory_id: UUID) -> None:
         await self.repo.delete_inventory_item(inventory_id)
